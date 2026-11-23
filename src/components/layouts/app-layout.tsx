@@ -35,7 +35,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               <div className="bg-primary text-primary-foreground flex size-7 items-center justify-center rounded-lg font-mono text-xs font-semibold">
                 TS
               </div>
-              <span className="text-base tracking-tight">TanStack Starter</span>
+              <span className="text-base tracking-tight">
+                FE Project Starter
+              </span>
             </Link>
             <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
               <Link

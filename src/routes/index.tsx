@@ -22,7 +22,7 @@ function Home() {
             <div className="bg-primary text-primary-foreground flex size-7 items-center justify-center rounded-lg font-mono text-xs font-semibold">
               TS
             </div>
-            <span>TanStack Starter</span>
+            <span>FE Project Starter</span>
           </div>
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
@@ -55,8 +55,8 @@ function Home() {
           Frontend Boilerplate with TanStack Router & Start
         </div>
 
-        <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
-          Boilerplate Autentikasi Modern
+        <h1 className="text-foreground text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl">
+          Boilerplate Frontend Project
         </h1>
         <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-base sm:text-lg">
           Lengkap dengan Register, Login, Verify OTP, Reset Password, dan

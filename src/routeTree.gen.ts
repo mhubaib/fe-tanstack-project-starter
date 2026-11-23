@@ -10,20 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authVerifyOtpRouteImport } from './routes/(auth)/verify-otp'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
@@ -52,11 +52,12 @@ const authVerifyOtpRoute = authVerifyOtpRouteImport.update({
   path: '/verify-otp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
+const AuthenticatedDashboardIndexRoute =
+  AuthenticatedDashboardIndexRouteImport.update({
+    id: '/dashboard/',
+    path: '/dashboard/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -65,7 +66,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof authRegisterRoute
   '/reset-password': typeof authResetPasswordRoute
   '/verify-otp': typeof authVerifyOtpRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -74,18 +75,18 @@ export interface FileRoutesByTo {
   '/register': typeof authRegisterRoute
   '/reset-password': typeof authResetPasswordRoute
   '/verify-otp': typeof authVerifyOtpRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/register': typeof authRegisterRoute
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/verify-otp': typeof authVerifyOtpRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -96,7 +97,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-otp'
-    | '/dashboard'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -115,12 +116,12 @@ export interface FileRouteTypes {
     | '/(auth)/register'
     | '/(auth)/reset-password'
     | '/(auth)/verify-otp'
-    | '/_authenticated/dashboard'
+    | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authLoginRoute: typeof authLoginRoute
   authRegisterRoute: typeof authRegisterRoute
@@ -141,7 +142,7 @@ declare module '@tanstack/react-router' {
       id: '/_authenticated'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteImport
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(auth)/forgot-password': {
@@ -179,31 +180,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authVerifyOtpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
+    '/_authenticated/dashboard/': {
+      id: '/_authenticated/dashboard/'
       path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
-interface AuthenticatedRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
-const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
 }
 
-const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
-  AuthenticatedRouteChildren,
-)
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authLoginRoute: authLoginRoute,
   authRegisterRoute: authRegisterRoute,

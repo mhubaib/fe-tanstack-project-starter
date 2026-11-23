@@ -30,7 +30,7 @@ export function AuthLayout({
             <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-lg font-mono text-sm font-semibold">
               TS
             </div>
-            <span>TanStack Starter</span>
+            <span>FE Project Starter</span>
           </Link>
         </div>
 
@@ -62,7 +62,7 @@ export function AuthLayout({
 
         {/* Copyright Footer */}
         <div className="text-muted-foreground mt-8 text-center text-xs">
-          &copy; 2026 TanStack Starter Boilerplate. All rights reserved.
+          &copy; 2026 FE Project Starter. All rights reserved.
         </div>
       </div>
     </div>

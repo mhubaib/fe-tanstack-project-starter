@@ -1,30 +1,61 @@
 import { useEffect, useState } from 'react'
-import type { FormEvent } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '#/features/auth/hooks/use-auth'
 import { authApi } from '#/features/auth/api/auth-api'
-import { Input } from '#/components/ui/input'
+import { Label } from '#/components/ui/label'
 import { Button } from '#/components/ui/button'
 import { FormError } from '#/components/forms/form-error'
 import {
   InputOTP,
   InputOTPGroup,
+  InputOTPSeparator,
   InputOTPSlot,
 } from '#/components/ui/input-otp'
 import { IconCheck, IconLoader2, IconRefresh } from '@tabler/icons-react'
+import { OTP_PURPOSES, verifyOtpSchema } from '#/types'
+import type { OtpPurpose, VerifyOtpDto } from '#/types'
 
 interface VerifyOtpFormProps {
   initialEmail?: string
+  initialPurpose?: OtpPurpose
 }
 
-export function VerifyOtpForm({ initialEmail = '' }: VerifyOtpFormProps) {
+export function VerifyOtpForm({
+  initialEmail = '',
+  initialPurpose = OTP_PURPOSES.EMAIL_VERIFICATION,
+}: VerifyOtpFormProps) {
   const { verifyOtp, isSubmitting, error, setError } = useAuth()
-  const [email, setEmail] = useState(initialEmail)
-  const [otp, setOtp] = useState('')
   const [resendCooldown, setResendCooldown] = useState(60)
   const [isResending, setIsResending] = useState(false)
   const [resendSuccess, setResendSuccess] = useState(false)
 
-  // Countdown timer for OTP resend
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<VerifyOtpDto>({
+    resolver: zodResolver(verifyOtpSchema),
+    defaultValues: {
+      email: initialEmail,
+      otp: '',
+      purpose: initialPurpose,
+    },
+  })
+
+  useEffect(() => {
+    if (initialEmail) {
+      setValue('email', initialEmail)
+    }
+    setValue('purpose', initialPurpose)
+  }, [initialEmail, initialPurpose, setValue])
+
+  const emailValue = watch('email')
+  const otpValue = watch('otp')
+
   useEffect(() => {
     if (resendCooldown <= 0) return
     const timer = setInterval(() => {
@@ -34,11 +65,11 @@ export function VerifyOtpForm({ initialEmail = '' }: VerifyOtpFormProps) {
   }, [resendCooldown])
 
   const handleResend = async () => {
-    if (!email || resendCooldown > 0 || isResending) return
+    if (!emailValue || resendCooldown > 0 || isResending) return
     setIsResending(true)
     setResendSuccess(false)
     try {
-      await authApi.resendOtp(email)
+      await authApi.resendOtp(emailValue)
       setResendSuccess(true)
       setResendCooldown(60)
     } catch {
@@ -48,27 +79,17 @@ export function VerifyOtpForm({ initialEmail = '' }: VerifyOtpFormProps) {
     }
   }
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    if (!email) {
-      setError('Email wajib diisi.')
-      return
-    }
-    if (otp.length < 6) {
-      setError('Silakan masukkan 6 digit kode OTP.')
-      return
-    }
-
+  const onSubmit = async (data: VerifyOtpDto) => {
     try {
-      await verifyOtp({ email, otp })
+      await verifyOtp(data)
     } catch {
       // Error handled in useAuth
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <FormError message={error} />
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <FormError message={error || errors.email?.message} />
 
       {resendSuccess && (
         <div className="border-primary/30 bg-primary/10 text-primary flex items-center gap-2 rounded-lg border p-2.5 text-xs">
@@ -77,49 +98,43 @@ export function VerifyOtpForm({ initialEmail = '' }: VerifyOtpFormProps) {
         </div>
       )}
 
-      <div className="space-y-1.5">
-        <label
-          htmlFor="otp-email"
-          className="text-foreground text-xs font-medium"
-        >
-          Email Penerima OTP
-        </label>
-        <Input
-          id="otp-email"
-          type="email"
-          placeholder="nama@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={isSubmitting || !!initialEmail}
-          required
-        />
-      </div>
+      <input type="hidden" {...register('email')} />
 
-      <div className="flex flex-col items-center justify-center space-y-2">
-        <label className="text-foreground text-xs font-medium">
-          Masukkan 6-Digit Kode OTP
-        </label>
-        <InputOTP
-          maxLength={6}
-          value={otp}
-          onChange={(val) => setOtp(val)}
-          disabled={isSubmitting}
-        >
-          <InputOTPGroup>
-            <InputOTPSlot index={0} />
-            <InputOTPSlot index={1} />
-            <InputOTPSlot index={2} />
-            <InputOTPSlot index={3} />
-            <InputOTPSlot index={4} />
-            <InputOTPSlot index={5} />
-          </InputOTPGroup>
-        </InputOTP>
+      <div className="flex flex-col items-center justify-center gap-4">
+        <Label>Masukkan 6-Digit Kode OTP</Label>
+        <Controller
+          control={control}
+          name="otp"
+          render={({ field }) => (
+            <InputOTP
+              maxLength={6}
+              value={field.value}
+              onChange={field.onChange}
+              disabled={isSubmitting}
+            >
+              <InputOTPGroup>
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+              </InputOTPGroup>
+              <InputOTPSeparator />
+              <InputOTPGroup>
+                <InputOTPSlot index={3} />
+                <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
+              </InputOTPGroup>
+            </InputOTP>
+          )}
+        />
+        {errors.otp && (
+          <p className="text-destructive text-xs">{errors.otp.message}</p>
+        )}
       </div>
 
       <Button
         type="submit"
         className="w-full"
-        disabled={isSubmitting || otp.length < 6}
+        disabled={isSubmitting || otpValue.length < 6}
       >
         {isSubmitting && <IconLoader2 className="mr-2 size-4 animate-spin" />}
         Verifikasi OTP
@@ -129,7 +144,7 @@ export function VerifyOtpForm({ initialEmail = '' }: VerifyOtpFormProps) {
         <button
           type="button"
           onClick={handleResend}
-          disabled={resendCooldown > 0 || isResending || !email}
+          disabled={resendCooldown > 0 || isResending || !emailValue}
           className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isResending ? (

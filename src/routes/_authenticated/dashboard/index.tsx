@@ -8,7 +8,7 @@ import {
   IconUser,
 } from '@tabler/icons-react'
 
-export const Route = createFileRoute('/_authenticated/dashboard')({
+export const Route = createFileRoute('/_authenticated/dashboard/')({
   component: DashboardPage,
 })
 

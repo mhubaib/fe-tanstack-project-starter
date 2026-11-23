@@ -1,5 +1,6 @@
 import { useAuthStore } from '#/features/auth/stores/auth-store'
 import { authApi } from '#/features/auth/api/auth-api'
+import { OTP_PURPOSES } from '#/types'
 import type { LoginDto, RegisterDto, VerifyOtpDto } from '#/types'
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
@@ -64,9 +65,22 @@ export function useAuth() {
     try {
       const response = await authApi.verifyOtp(payload)
       if (response.data) {
+        // If purpose is reset-password, navigate to reset-password with the returned reset token
+        if (payload.purpose === OTP_PURPOSES.RESET_PASSWORD) {
+          navigate({
+            to: '/reset-password',
+            search: {
+              token: response.data.token,
+            },
+          })
+          return response.data
+        }
+
+        // Default: authenticate and navigate to home
         setSession(response.data.token, response.data.user)
         navigate({ to: '/' })
       }
+      return response.data
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : 'OTP verification failed.'

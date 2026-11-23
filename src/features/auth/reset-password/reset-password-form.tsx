@@ -1,12 +1,16 @@
 import { useState } from 'react'
-import type { FormEvent } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
 import { authApi } from '#/features/auth/api/auth-api'
 import { PasswordInput } from '#/components/forms/password-input'
+import { Label } from '#/components/ui/label'
 import { Input } from '#/components/ui/input'
 import { Button } from '#/components/ui/button'
 import { FormError } from '#/components/forms/form-error'
 import { IconCheck, IconLoader2 } from '@tabler/icons-react'
+import { resetPasswordSchema } from '#/types'
+import type { ResetPasswordDto } from '#/types'
 
 interface ResetPasswordFormProps {
   initialToken?: string
@@ -15,40 +19,28 @@ interface ResetPasswordFormProps {
 export function ResetPasswordForm({
   initialToken = '',
 }: ResetPasswordFormProps) {
-  const [token, setToken] = useState(initialToken)
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isSuccess, setIsSuccess] = useState(false)
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ResetPasswordDto>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      token: initialToken,
+      password: '',
+      confirmPassword: '',
+    },
+  })
 
-    if (!token) {
-      setError('Token reset password tidak ditemukan atau tidak valid.')
-      return
-    }
-
-    if (!password || !confirmPassword) {
-      setError('Silakan isi password baru dan konfirmasi.')
-      return
-    }
-
-    if (password.length < 6) {
-      setError('Password baru minimal 6 karakter.')
-      return
-    }
-
-    if (password !== confirmPassword) {
-      setError('Konfirmasi password tidak cocok.')
-      return
-    }
-
+  const onSubmit = async (data: ResetPasswordDto) => {
     setIsSubmitting(true)
     setError(null)
     try {
-      await authApi.resetPassword({ token, password, confirmPassword })
+      await authApi.resetPassword(data)
       setIsSuccess(true)
     } catch (err: unknown) {
       setError(
@@ -84,63 +76,56 @@ export function ResetPasswordForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <FormError message={error} />
 
       {!initialToken && (
         <div className="space-y-1.5">
-          <label
-            htmlFor="reset-token"
-            className="text-foreground text-xs font-medium"
-          >
-            Token Reset
-          </label>
+          <Label htmlFor="reset-token">Token Reset</Label>
           <Input
             id="reset-token"
             type="text"
             placeholder="Masukkan token dari email"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
             disabled={isSubmitting}
-            required
+            aria-invalid={!!errors.token}
+            {...register('token')}
           />
+          {errors.token && (
+            <p className="text-destructive text-xs">{errors.token.message}</p>
+          )}
         </div>
       )}
 
       <div className="space-y-1.5">
-        <label
-          htmlFor="new-password"
-          className="text-foreground text-xs font-medium"
-        >
-          Password Baru
-        </label>
+        <Label htmlFor="new-password">Password Baru</Label>
         <PasswordInput
           id="new-password"
           placeholder="Minimal 6 karakter"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"
           disabled={isSubmitting}
-          required
+          aria-invalid={!!errors.password}
+          {...register('password')}
         />
+        {errors.password && (
+          <p className="text-destructive text-xs">{errors.password.message}</p>
+        )}
       </div>
 
       <div className="space-y-1.5">
-        <label
-          htmlFor="confirm-new-password"
-          className="text-foreground text-xs font-medium"
-        >
-          Konfirmasi Password Baru
-        </label>
+        <Label htmlFor="confirm-new-password">Konfirmasi Password Baru</Label>
         <PasswordInput
           id="confirm-new-password"
           placeholder="Ulangi password baru"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
           autoComplete="new-password"
           disabled={isSubmitting}
-          required
+          aria-invalid={!!errors.confirmPassword}
+          {...register('confirmPassword')}
         />
+        {errors.confirmPassword && (
+          <p className="text-destructive text-xs">
+            {errors.confirmPassword.message}
+          </p>
+        )}
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>

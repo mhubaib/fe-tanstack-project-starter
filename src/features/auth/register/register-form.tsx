@@ -1,120 +1,106 @@
-import { useState } from 'react'
-import type { FormEvent } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '#/features/auth/hooks/use-auth'
+import { Label } from '#/components/ui/label'
 import { Input } from '#/components/ui/input'
 import { PasswordInput } from '#/components/forms/password-input'
 import { Button } from '#/components/ui/button'
 import { FormError } from '#/components/forms/form-error'
 import { IconLoader2 } from '@tabler/icons-react'
+import { registerSchema } from '#/types'
+import type { RegisterDto } from '#/types'
 
 export function RegisterForm() {
-  const { register, isSubmitting, error, setError } = useAuth()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  const { register: registerAuth, isSubmitting, error } = useAuth()
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterDto>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  })
 
-    if (!name || !email || !password || !confirmPassword) {
-      setError('Semua kolom wajib diisi.')
-      return
-    }
-
-    if (password.length < 6) {
-      setError('Password minimal harus 6 karakter.')
-      return
-    }
-
-    if (password !== confirmPassword) {
-      setError('Konfirmasi password tidak cocok.')
-      return
-    }
-
+  const onSubmit = async (data: RegisterDto) => {
     try {
-      await register({ name, email, password, confirmPassword })
+      await registerAuth(data)
     } catch {
       // Error handled in useAuth
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <FormError message={error} />
 
       <div className="space-y-1.5">
-        <label
-          htmlFor="reg-name"
-          className="text-foreground text-xs font-medium"
-        >
-          Nama Lengkap
-        </label>
+        <Label htmlFor="reg-name">Nama Lengkap</Label>
         <Input
           id="reg-name"
           type="text"
           placeholder="Nama Anda"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
           autoComplete="name"
           disabled={isSubmitting}
-          required
+          aria-invalid={!!errors.name}
+          {...register('name')}
         />
+        {errors.name && (
+          <p className="text-destructive text-xs">{errors.name.message}</p>
+        )}
       </div>
 
       <div className="space-y-1.5">
-        <label
-          htmlFor="reg-email"
-          className="text-foreground text-xs font-medium"
-        >
-          Email
-        </label>
+        <Label htmlFor="reg-email">Email</Label>
         <Input
           id="reg-email"
           type="email"
           placeholder="nama@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
           autoComplete="email"
           disabled={isSubmitting}
-          required
+          aria-invalid={!!errors.email}
+          {...register('email')}
         />
+        {errors.email && (
+          <p className="text-destructive text-xs">{errors.email.message}</p>
+        )}
       </div>
 
       <div className="space-y-1.5">
-        <label
-          htmlFor="reg-password"
-          className="text-foreground text-xs font-medium"
-        >
-          Password
-        </label>
+        <Label htmlFor="reg-password">Password</Label>
         <PasswordInput
           id="reg-password"
           placeholder="Minimal 6 karakter"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"
           disabled={isSubmitting}
-          required
+          aria-invalid={!!errors.password}
+          {...register('password')}
         />
+        {errors.password && (
+          <p className="text-destructive text-xs">{errors.password.message}</p>
+        )}
       </div>
 
       <div className="space-y-1.5">
-        <label
-          htmlFor="reg-confirm-password"
-          className="text-foreground text-xs font-medium"
-        >
-          Konfirmasi Password
-        </label>
+        <Label htmlFor="reg-confirm-password">Konfirmasi Password</Label>
         <PasswordInput
           id="reg-confirm-password"
           placeholder="Ulangi password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
           autoComplete="new-password"
           disabled={isSubmitting}
-          required
+          aria-invalid={!!errors.confirmPassword}
+          {...register('confirmPassword')}
         />
+        {errors.confirmPassword && (
+          <p className="text-destructive text-xs">
+            {errors.confirmPassword.message}
+          </p>
+        )}
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
