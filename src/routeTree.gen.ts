@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as errors404RouteImport } from './routes/(errors)/404'
+import { Route as errors500RouteImport } from './routes/(errors)/500'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const errors404Route = errors404RouteImport.update({
+  id: '/(errors)/404',
+  path: '/404',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const errors500Route = errors500RouteImport.update({
+  id: '/(errors)/500',
+  path: '/500',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/404': typeof errors404Route
+  '/500': typeof errors500Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/404': typeof errors404Route
+  '/500': typeof errors500Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/(errors)/404': typeof errors404Route
+  '/(errors)/500': typeof errors500Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/404' | '/500'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/404' | '/500'
+  id: '__root__' | '/' | '/(errors)/404' | '/(errors)/500'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  errors404Route: typeof errors404Route
+  errors500Route: typeof errors500Route
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(errors)/404': {
+      id: '/(errors)/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof errors404RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(errors)/500': {
+      id: '/(errors)/500'
+      path: '/500'
+      fullPath: '/500'
+      preLoaderRoute: typeof errors500RouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  errors404Route: errors404Route,
+  errors500Route: errors500Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
