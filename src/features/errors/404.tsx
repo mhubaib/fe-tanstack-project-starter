@@ -1,12 +1,8 @@
 import { Button } from '#/components/ui/button'
 import { IconArrowLeft, IconHome } from '@tabler/icons-react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/(errors)/404')({
-  component: NotFoundPage,
-})
-
-function NotFoundPage() {
+export function NotFoundPage() {
   const navigate = useNavigate()
 
   const handleGoBack = () => {

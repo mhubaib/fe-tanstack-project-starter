@@ -1,17 +1,13 @@
 import { Button } from '#/components/ui/button'
 import { IconArrowLeft, IconHome } from '@tabler/icons-react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
-
-export const Route = createFileRoute('/(errors)/500')({
-  component: UnknownErrorPage,
-})
 
 interface UnknownErrorPageProps {
   error?: unknown
 }
 
-function UnknownErrorPage({ error }: UnknownErrorPageProps) {
+export function UnknownErrorPage({ error }: UnknownErrorPageProps) {
   const navigate = useNavigate()
 
   useEffect(() => {
