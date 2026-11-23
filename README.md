@@ -1,194 +1,192 @@
-Welcome to your new TanStack Start app!
+# Frontend TanStack Project Starter
 
-# Getting Started
+Boilerplate frontend modern dan _production-ready_ berbasis **TanStack Start**, **TanStack Router**, **React 19**, **Tailwind CSS v4**, dan komponen **Shadcn UI**. Proyek ini dilengkapi alur autentikasi lengkap, sistem proteksi rute, manajemen form berbasis Zod, dan integrasi API client Axios.
 
-To run this application:
+---
 
-```bash
-pnpm install
-pnpm dev
+## Fitur Utama
+
+- **Modern Fullstack/SSR Ready**: Didukung oleh TanStack Start (`@tanstack/react-start`) dan Vite 8.
+- **File-based Routing & Guards**: TanStack Router (`@tanstack/react-router`) dengan tata kelola rute otomatis dan _route protection_ (`beforeLoad`).
+- **Alur Autentikasi Lengkap**:
+  - **Masuk (Login)**: Dilengkapi fitur _Remember Me_ (cookie 30 hari).
+  - **Daftar (Register)**: Validasi formulir lengkap dengan konfirmasi kata sandi.
+  - **Lupa Kata Sandi**: Pengiriman tautan reset ke email pengguna.
+  - **Reset Kata Sandi**: Penggantian kata sandi dengan verifikasi token.
+  - **Verifikasi OTP**: Input 6-digit OTP (`InputOTP`) yang terhubung langsung via _search parameters_ URL (`?email=...&purpose=...`) dengan timer kirim ulang (_resend countdown_).
+- **Protected Routes**: Rute privat dibungkus di layout `_authenticated` dengan pengalihan otomatis ke `/login` jika belum memiliki token valid.
+- **Tailwind CSS v4 & Shadcn UI**: Sistem desain modern menggunakan CSS variables, Base UI primitives (`@base-ui/react`), Tabler Icons (`@tabler/icons-react`), dan animasi transisi halus.
+- **Form Management & Validation**: Menggunakan React Hook Form dengan validasi skema Zod v4 (`@hookform/resolvers/zod`).
+- **HTTP Client & Mock Fallback**: Axios client dengan interceptor token Bearer otomatis, penanganan status 401 Unauthorized global, serta simulasi _Dev Mode Fallback_ untuk kebutuhan pengujian offline.
+- **State Management**: Zustand v5 yang terintegrasi dengan cookie untuk persistensi sesi login.
+
+---
+
+## Tech Stack
+
+| Kategori                 | Teknologi                                                                                                                                                                  |
+| :----------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Framework & Core**     | [React 19](https://react.dev/), [TanStack Start](https://tanstack.com/start), [Vite 8](https://vitejs.dev/)                                                                |
+| **Routing**              | [TanStack Router](https://tanstack.com/router) (File-based)                                                                                                                |
+| **Styling**              | [Tailwind CSS v4](https://tailwindcss.com/), [Fontsource Inter](https://fontsource.org/fonts/inter)                                                                        |
+| **Komponen UI**          | [Shadcn UI](https://ui.shadcn.com/) / [@base-ui/react](https://base-ui.com/), [Tabler Icons](https://tabler.io/icons)                                                      |
+| **Form & Validasi**      | [React Hook Form](https://react-hook-form.com/), [Zod v4](https://zod.dev/)                                                                                                |
+| **State Management**     | [Zustand v5](https://zustand-demo.pmnd.rs/)                                                                                                                                |
+| **Data Fetching / HTTP** | [TanStack React Query v5](https://tanstack.com/query), [Axios](https://axios-http.com/)                                                                                    |
+| **Code Quality**         | [ESLint 9](https://eslint.org/), [Prettier 3](https://prettier.io/), [Husky](https://typicode.github.io/husky/), [Lint-Staged](https://github.com/lint-staged/lint-staged) |
+
+---
+
+## Struktur Direktori
+
+```text
+src/
+├── components/           # Komponen UI global & dapat digunakan kembali
+│   ├── dialogs/          # Komponen dialog konfirmasi & modal
+│   ├── forms/            # Komponen form khusus (PasswordInput, FormError, dsb.)
+│   ├── layouts/          # Tata letak halaman (AuthLayout, AppLayout)
+│   └── ui/               # Komponen primitif Shadcn UI (Button, Input, Label, OTP, dsb.)
+├── features/             # Modul fungsional berdasarkan fitur
+│   ├── auth/             # Fitur autentikasi (login, register, OTP, reset password)
+│   │   ├── api/          # Endpoint API & mock fallback autentikasi
+│   │   ├── hooks/        # Custom hook useAuth
+│   │   ├── stores/       # Store Zustand (auth session & cookies)
+│   │   └── ...           # Sub-komponen form tiap alur autentikasi
+│   └── errors/           # Halaman penanganan error (404, 500)
+├── hooks/                # Custom React hooks umum (useDebounce, dsb.)
+├── lib/                  # Utilitas sistem, cookies, dan konfigurasi API client
+├── routes/               # Struktur file-based routing TanStack Router
+│   ├── (auth)/           # Rute publik autentikasi (/login, /register, /verify-otp, dsb.)
+│   ├── _authenticated/   # Rute terproteksi (/dashboard)
+│   ├── __root.tsx        # Root shell layout & HTML wrapper
+│   └── index.tsx         # Landing page / halaman utama
+├── styles.css            # Konfigurasi Tailwind CSS v4 & theme variables
+└── types/                # Definisi TypeScript interface & skema Zod
 ```
 
-# Building For Production
+---
 
-To build this application for production:
+## Memulai Project
 
-```bash
-pnpm build
+### Prasyarat
+
+- **Node.js**: Versi 22 atau lebih baru
+- **Package Manager**: [pnpm](https://pnpm.io/) (disarankan)
+
+### Instalasi
+
+1. Clone repositori ini ke komputer lokal Anda:
+
+   ```bash
+   git clone <repository-url>
+   cd fe-tanstact-project-starter
+   ```
+
+2. Pasang seluruh dependensi:
+
+   ```bash
+   pnpm install
+   ```
+
+3. Jalankan server pengembangan (_development server_):
+   ```bash
+   pnpm dev
+   ```
+   Aplikasi akan berjalan di `http://localhost:3000`.
+
+---
+
+## Skrip yang Tersedia
+
+Berikut adalah perintah-perintah yang dapat dijalankan melalui terminal:
+
+| Perintah       | Deskripsi                                                     |
+| :------------- | :------------------------------------------------------------ |
+| `pnpm dev`     | Menjalankan development server pada port 3000                 |
+| `pnpm build`   | Membangun bundle aplikasi untuk tahap produksi                |
+| `pnpm preview` | Menjalankan preview lokal dari hasil build produksi           |
+| `pnpm lint`    | Menjalankan ESLint untuk memeriksa kualitas kode              |
+| `pnpm format`  | Memformat kode dengan Prettier dan menjalankan ESLint autofix |
+| `pnpm check`   | Memeriksa kepatuhan format kode menggunakan Prettier          |
+
+---
+
+## Konfigurasi Environment
+
+Aplikasi ini dapat dikonfigurasikan menggunakan variabel environment berikut (dapat diletakkan di file `.env`):
+
+```env
+# URL dasar backend API (default: '/api')
+VITE_API_BASE_URL=http://localhost:8000/api
 ```
 
-## Styling
+> **Catatan Pengujian Offline (Dev Mode):** Jika backend belum aktif atau URL backend tidak dapat diakses, modul autentikasi (`src/features/auth/api/auth-api.ts`) secara otomatis menyediakan simulasi fallback agar alur UI tetap dapat dicoba secara lancar.
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+---
 
-### Removing Tailwind CSS
+## Panduan Penggunaan & Alur Rute
 
-If you prefer not to use Tailwind CSS:
+### 1. Menambahkan Halaman Baru
 
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Remove `@tailwindcss/vite` and `tailwindcss` from `package.json`
+Tambahkan file baru di dalam folder `src/routes/`. TanStack Router akan secara otomatis mendeteksi dan memperbarui `src/routeTree.gen.ts`.
 
-## Linting & Formatting
+- Untuk halaman terproteksi, tambahkan file di bawah folder `src/routes/_authenticated/`.
+- Untuk halaman bebas akses, letakkan langsung di `src/routes/` atau kelompokkan dengan route group seperti `(auth)`.
 
+### 2. Alur Halaman Verifikasi OTP
 
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
+Halaman verifikasi OTP (`/verify-otp`) menerima parameter pencarian (_search params_):
 
-```bash
-pnpm lint
-pnpm format
-pnpm check
-```
+- `email`: Alamat email pengguna tujuan OTP (misal: `?email=user@example.com`).
+- `purpose`: Tujuan verifikasi, dapat bernilai:
+  - `email-verification` (default)
+  - `login` (2FA)
+  - `reset-password`
 
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
+Contoh navigasi dari kode:
 
 ```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
+navigate({
+  to: '/verify-otp',
+  search: {
+    email: 'user@example.com',
+    purpose: 'email-verification',
   },
 })
 ```
 
-## Data Fetching
+---
 
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
+## Kontribusi (Contribution)
 
-For example:
+Kontribusi untuk perbaikan bug, penambahan fitur, atau penyempurnaan dokumentasi sangat diapresiasi! Ikuti langkah-langkah berikut untuk berkontribusi:
 
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
+1. **Fork** repositori ini.
+2. Buat branch fitur baru:
+   ```bash
+   git checkout -b feature/nama-fitur
+   ```
+3. Lakukan perubahan kode dan pastikan seluruh pengecekan lint serta format berhasil:
+   ```bash
+   pnpm format
+   pnpm lint
+   ```
+4. Commit perubahan Anda dengan pesan commit yang jelas dan deskriptif:
+   ```bash
+   git commit -m "feat: deskripsi perubahan"
+   ```
+5. Push branch Anda ke repository remote:
+   ```bash
+   git push origin feature/nama-fitur
+   ```
+6. Buka **Pull Request** (PR) ke branch utama (`main`).
 
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
+---
 
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
+## Bantuan & Dukungan (Support)
 
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
+Jika Anda menemui kendala, menemukan bug, atau memiliki pertanyaan seputar proyek ini:
 
-
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+- **Laporkan Bug / Saran Fitur**: Buat tiket baru melalui halaman **Issues**.
+- **Diskusi & Pertanyaan**: Buka topik diskusi baru melalui tab **Discussions** atau hubungi pengelola proyek.
+- ⭐ **Dukungan**: Jika starter template ini membantu proyek Anda, dukung pengembangannya dengan memberikan bintang (_star_) pada repositori ini!
