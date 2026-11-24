@@ -1,5 +1,5 @@
-import { useAuthStore } from '#/features/auth/stores/auth-store'
 import { authApi } from '#/features/auth/api/auth-api'
+import { useAuthStore } from '#/stores/auth-store'
 import { OTP_PURPOSES } from '#/types'
 import type { LoginDto, RegisterDto, VerifyOtpDto } from '#/types'
 import { useNavigate } from '@tanstack/react-router'
