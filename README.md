@@ -159,7 +159,7 @@ navigate({
 
 ## Kontribusi (Contribution)
 
-Kontribusi untuk perbaikan bug, penambahan fitur, atau penyempurnaan dokumentasi sangat diapresiasi! Ikuti langkah-langkah berikut untuk berkontribusi:
+Kontribusi untuk perbaikan bug, penambahan fitur, atau penyempurnaan sangat diapresiasi! Ikuti langkah-langkah berikut untuk berkontribusi:
 
 1. **Fork** repositori ini.
 2. Buat branch fitur baru:
@@ -173,7 +173,7 @@ Kontribusi untuk perbaikan bug, penambahan fitur, atau penyempurnaan dokumentasi
    ```
 4. Commit perubahan Anda dengan pesan commit yang jelas dan deskriptif:
    ```bash
-   git commit -m "feat: deskripsi perubahan"
+   git commit -m "feat: deskripsi perubahan..."
    ```
 5. Push branch Anda ke repository remote:
    ```bash
