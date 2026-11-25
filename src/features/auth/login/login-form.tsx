@@ -93,7 +93,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           htmlFor="remember-me"
           className="text-muted-foreground text-xs font-normal"
         >
-          Ingat saya (30 hari)
+          Ingat saya
         </Label>
       </div>
 
